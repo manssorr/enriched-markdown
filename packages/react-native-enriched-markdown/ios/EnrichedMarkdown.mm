@@ -1453,7 +1453,7 @@ static CGSize ENRMRoundedContentSize(CGSize contentSize, CGFloat width)
                                   selectionEnd:selectionEnd];
         });
     return buildEditMenuForSelection(textView.textStorage, textView.selectedRange, segmentMarkdown, strongSelf->_config,
-                                     @[ baseMenu ], customItems, strongSelf->_selectionMenuConfig,
+                                     @[ baseMenu ], customItems, strongSelf -> _selectionMenuConfig,
                                      [strongSelf selectionCopyHandler]);
   }];
 #endif
@@ -1714,7 +1714,7 @@ static CGSize ENRMRoundedContentSize(CGSize contentSize, CGFloat width)
 
   if (applyMarkdownStyleToConfig(_config, newViewProps.markdownStyle, oldViewProps.markdownStyle)) {
     _dirtyFlags |= ENRMDirtyForceHeight | ENRMDirtyRender;
-    if (!markdownChanged) {
+    if (!markdownChanged || admonitionTitlesChanged(newViewProps.markdownStyle, oldViewProps.markdownStyle)) {
       _dirtyFlags |= ENRMDirtyRecreateSegments;
     }
   }
