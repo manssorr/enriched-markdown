@@ -257,6 +257,7 @@ class EnrichedMarkdown(
   private var imageRequestHeaders: Map<String, String> = emptyMap()
   private var imageSourceOverrides: Map<String, ImageSourceOverride> = emptyMap()
   private var linkPillContent: Map<String, LinkPillContent> = emptyMap()
+  private var admonitionTitles: Map<String, String> = emptyMap()
 
   // Fabric children (the React slot views) live here, above the segments, so the
   // segment reconciler's child indices stay its own. Fabric positions them.
@@ -380,6 +381,7 @@ class EnrichedMarkdown(
     newConfig?.imageRequestHeaders = imageRequestHeaders
     newConfig?.imageSourceOverrides = imageSourceOverrides
     newConfig?.linkPillContent = linkPillContent
+    newConfig?.admonitionTitles = admonitionTitles
     if (markdownStyle == newConfig) return
     markdownStyle = newConfig
     dirtyFlags += DirtyFlag.RECREATE_SEGMENTS
@@ -391,6 +393,14 @@ class EnrichedMarkdown(
     if (imageRequestHeaders == headers) return
     imageRequestHeaders = headers
     markdownStyle?.imageRequestHeaders = headers
+    dirtyFlags += DirtyFlag.RECREATE_SEGMENTS
+    renderPending = true
+  }
+
+  fun setAdmonitionTitles(titles: Map<String, String>) {
+    if (admonitionTitles == titles) return
+    admonitionTitles = titles
+    markdownStyle?.admonitionTitles = titles
     dirtyFlags += DirtyFlag.RECREATE_SEGMENTS
     renderPending = true
   }
@@ -694,6 +704,7 @@ class EnrichedMarkdown(
           config.imageRequestHeaders = imageRequestHeaders
           config.imageSourceOverrides = imageSourceOverrides
           config.linkPillContent = linkPillContent
+          config.admonitionTitles = admonitionTitles
         }
     }
   }

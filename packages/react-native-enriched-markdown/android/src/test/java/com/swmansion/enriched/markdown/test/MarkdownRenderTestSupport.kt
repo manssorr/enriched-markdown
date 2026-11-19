@@ -25,11 +25,7 @@ object MarkdownRenderTestSupport {
     return renderer.renderContent(blocks.toList())
   }
 
-  /**
-   * The style map the JS side sends, with [list], [taskList], [blockquote], [codeBlock], [image] and [highlight] entries replacing
-   * the defaults.
-   * Sizes are Double, colors Int, as in a ReadableMap.
-   */
+  /** [styleMap] parsed into a [StyleConfig]. */
   fun styleConfig(
     list: Map<String, Any> = emptyMap(),
     taskList: Map<String, Any> = emptyMap(),
@@ -37,7 +33,21 @@ object MarkdownRenderTestSupport {
     codeBlock: Map<String, Any> = emptyMap(),
     image: Map<String, Any> = emptyMap(),
     highlight: Map<String, Any> = emptyMap(),
-  ): StyleConfig {
+  ): StyleConfig = StyleConfig(styleMap(list, taskList, blockquote, codeBlock, image, highlight), context, false, 0f)
+
+  /**
+   * The style map the JS side sends, with [list], [taskList], [blockquote], [codeBlock], [image] and [highlight] entries replacing
+   * the defaults.
+   * Sizes are Double, colors Int, as in a ReadableMap.
+   */
+  fun styleMap(
+    list: Map<String, Any> = emptyMap(),
+    taskList: Map<String, Any> = emptyMap(),
+    blockquote: Map<String, Any> = emptyMap(),
+    codeBlock: Map<String, Any> = emptyMap(),
+    image: Map<String, Any> = emptyMap(),
+    highlight: Map<String, Any> = emptyMap(),
+  ): JavaOnlyMap {
     DisplayMetricsHolder.initDisplayMetricsIfNotInitialized(context)
     val style = JavaOnlyMap()
     // Headings are read by StyleConfig.needsJustify, which every segment render consults.
@@ -74,7 +84,7 @@ object MarkdownRenderTestSupport {
     style.putMap("thematicBreak", JavaOnlyMap.of("color", Color.BLACK, "height", 1.0, "marginTop", 0.0, "marginBottom", 0.0))
     style.putMap("image", JavaOnlyMap().apply { putAll(defaultImage + image) })
     style.putMap("inlineImage", JavaOnlyMap.of("size", 20.0))
-    return StyleConfig(style, context, false, 0f)
+    return style
   }
 
   /** Every section clipboard HTML export reads, with all sizes zero. */
@@ -251,7 +261,6 @@ object MarkdownRenderTestSupport {
         is Int -> putInt(key, value)
         is Double -> putDouble(key, value)
         is Float -> putDouble(key, value.toDouble())
-        is JavaOnlyMap -> putMap(key, value)
         else -> error("Unsupported style value for $key: $value")
       }
     }
